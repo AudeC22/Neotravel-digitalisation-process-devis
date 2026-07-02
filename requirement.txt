@@ -1,0 +1,15 @@
+Relance n8n
+
+Dans le terminal, tape :
+
+docker compose up -d
+
+Si cela ne fonctionne pas :
+
+docker-compose up -d
+
+--
+docker logs n8n-digitalisation-devis
+
+ouvrir automatiquement n8n depuis PowerShell:
+docker logs n8n-digitalisation-devisstart http://localhost:5678

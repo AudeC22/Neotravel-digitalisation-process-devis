@@ -1,0 +1,60 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-digitalisation-devis
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: admin
+      WEBHOOK_URL: http://localhost:5678/
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: devisdb
+      DB_POSTGRESDB_USER: devisuser
+      DB_POSTGRESDB_PASSWORD: devispassword
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./documents:/documents
+    depends_on:
+      - postgres
+      - python-api
+
+  postgres:
+    image: postgres:16
+    container_name: postgres-devis
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: devisdb
+      POSTGRES_USER: devisuser
+      POSTGRES_PASSWORD: devispassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  python-api:
+    build: ./python-api
+    container_name: python-api-devis
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./documents:/documents
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-llm
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  n8n_data:
+  postgres_data:
+  ollama_data:
